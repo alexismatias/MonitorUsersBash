@@ -1,0 +1,66 @@
+#! /bin/bash
+#Name: Alexis Matias
+#EUID: ajm0558
+
+
+echo "The date and time is: `date` "
+
+echo "inital users logged in: "
+
+set `users` #assigns parameters to each user, maybe use and call each parameter in a loop? $sum + $i?
+echo "`users`" #Shows all users
+
+
+users=`users` #set variable to users to parse using $@ command
+
+#for (( i=1; $i <= $#; i=$i+1)) // Only shows numbers
+#do
+#	let "pos=$pos+$i"
+#	echo "$i logged into `uname -n`"
+#done
+
+
+for i in ${users[@]}; #loops initial users
+do
+	echo "> $i logged into `uname -n`"
+done
+
+ctrl=0
+function siginfx() {
+	let ctrl++
+	echo " "
+	echo "^C (SIGINT) ignored. enter ^C 1 more time to terminate program.";
+	if [[ $ctrl == 2 ]]
+	then
+		exit
+	fi
+}
+
+trap siginfx SIGINT
+
+while true
+do
+	initUsers=$(who | wc -l)
+	echo "`date`) # of users: $(who | wc -l)"
+	#$(who | cut -d' ' -f1) #shows users
+	sleep 10 #repeats every 10s
+
+	newUsers=$(who | wc -l)
+#	if [[ newUsers != newUsers ]]
+#	then
+#		echo "> $(grep -v "$users" newUsers) logged in."
+#	fi
+
+	if [[ $initUsers < $newUsers ]]
+	then
+		echo ">" `users | awk '{print $4}'` " LOGGED INTO `uname -n`" #Had trouble with showing the specific user logging in
+		echo " "
+
+	elif [[ $initUsers > $newUsers ]]
+	then
+		echo ">" `users | awk '{print $4}'` "LOGGED OUT OF `uname -n`"
+		echo " "
+	fi
+
+done
+
